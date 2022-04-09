@@ -1,15 +1,17 @@
 import { StatusBar } from 'expo-status-bar';
 import { useState, useEffect} from 'react';
-import { FlatList, StyleSheet, Text, View, Image, TouchableOpacity, RefreshControl } from 'react-native';
+import { FlatList, StyleSheet, Text, View, Image, TouchableOpacity, RefreshControl, ScrollView } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
-
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 
 export default function App() {
+  
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
-  console.log(data);
+  
 
   const getData = async () =>{
     fetch('https://nstv.gr/data/')
@@ -24,15 +26,6 @@ export default function App() {
     setRefreshing(false);
   },[]);
 
-  const Article = ({item}) => {
-    return (
-    <TouchableOpacity onPress={() => {WebBrowser.openBrowserAsync(`${item.url}`)}}>
-        <Image source={{uri: item.image}} style={styles.image} />
-        <Text style={styles.dateviews}>Δημοσιεύτηκε στις: {item.date}| {item.views} προβολές </Text>
-        <Text style={styles.title}>{item.title}</Text>
-    </TouchableOpacity>
-    )
-  }
 
   const onRefresh = () => {
     setLoading(false);
@@ -40,7 +33,24 @@ export default function App() {
     getData();
     setRefreshing(false);
 };
+const Stack = createNativeStackNavigator();
 
+
+// const Article = ({item, navigation}) => {
+//   return (
+//     // () => {WebBrowser.openBrowserAsync(`${item.url}`)}
+    
+//   <TouchableOpacity onPress={() => navigation.navigate('ArticleScreen', {id: `${item.id}`})}>
+//       <Image source={{uri: item.image}} style={styles.image} />
+//       <Text style={styles.dateviews}>Δημοσιεύτηκε στις: {item.date}| {item.views} προβολές </Text>
+//       <Text style={styles.title}>{item.title}</Text>
+//   </TouchableOpacity>
+//   )
+//   console.log(navigation);
+// }
+
+const HomeScreen = ({navigation}) => {
+  
   return (
     <View style={{ flex: 1 }}>
       {isLoading ? <Text>Loading...</Text> : 
@@ -51,7 +61,15 @@ export default function App() {
           <FlatList
             data={data}
             keyExtractor={({ id }, index) => id}
-            renderItem={Article}
+            renderItem={({item})=>{
+              return (
+              <TouchableOpacity onPress={() => navigation.navigate('ArticleScreen', {id: `${item.id}`, body: `${item.body}`, title: `${item.title}`, image: `${item.image}`, views: `${item.views}`, date: `${item.date}`})}>
+                <Image source={{uri: item.image}} style={styles.image} />
+                <Text style={styles.dateviews}>Δημοσιεύτηκε στις: {item.date}| {item.views} προβολές </Text>
+                <Text style={styles.title}>{item.title}</Text>
+              </TouchableOpacity>
+              );
+            }}
             refreshControl={
               <RefreshControl
                 refreshing={refreshing}
@@ -63,6 +81,38 @@ export default function App() {
         </View>
       )}
     </View>
+  );
+}  
+
+
+const ArticleScreen = ({route, navigation}) => {
+  const { id, body, title, image, views, date } = route.params;
+  return(
+
+  
+  <ScrollView>
+    <Image source={{uri: image}} style={styles.imageArticle} />
+    <Text style={styles.dateviews}>Δημοσιεύτηκε στις: {date}| {views} προβολές </Text>
+    <Text style={styles.title}>{title}</Text>
+    <Text style={styles.body}>{body}</Text>
+  </ScrollView>
+  )
+}
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen 
+        name="HomeScreen"
+        component={HomeScreen}
+        options={{ headerShown: false }}
+        />
+        <Stack.Screen 
+        name="ArticleScreen"
+        component={ArticleScreen}
+        options={{title: 'Αρχική NStv'}}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
@@ -76,6 +126,12 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 240,
     resizeMode: 'cover'
+  },
+  imageArticle: {
+    width: '100%',
+    height: 240,
+    resizeMode: 'cover',
+    marginBottom: 10
   },
   logoContainer: {
     width: '100%',
@@ -99,5 +155,8 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: "#222222",
     paddingLeft: 15
+  },
+  body: {
+    padding: 20
   }
 });
