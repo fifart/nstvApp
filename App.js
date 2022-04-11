@@ -1,10 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
 import { useState, useEffect} from 'react';
-import { FlatList, StyleSheet, Text, View, Image, TouchableOpacity, RefreshControl, ScrollView } from 'react-native';
+import { FlatList, StyleSheet, Text, View, Image, TouchableOpacity, RefreshControl, ScrollView, useWindowDimensions, ActivityIndicator } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
+import RenderHtml from 'react-native-render-html';
 
 export default function App() {
   
@@ -35,25 +35,12 @@ export default function App() {
 };
 const Stack = createNativeStackNavigator();
 
-
-// const Article = ({item, navigation}) => {
-//   return (
-//     // () => {WebBrowser.openBrowserAsync(`${item.url}`)}
-    
-//   <TouchableOpacity onPress={() => navigation.navigate('ArticleScreen', {id: `${item.id}`})}>
-//       <Image source={{uri: item.image}} style={styles.image} />
-//       <Text style={styles.dateviews}>Δημοσιεύτηκε στις: {item.date}| {item.views} προβολές </Text>
-//       <Text style={styles.title}>{item.title}</Text>
-//   </TouchableOpacity>
-//   )
-//   console.log(navigation);
-// }
-
 const HomeScreen = ({navigation}) => {
+  const { width } = useWindowDimensions();
   
   return (
     <View style={{ flex: 1 }}>
-      {isLoading ? <Text>Loading...</Text> : 
+      {isLoading ? <View style={styles.activityContainer}><ActivityIndicator size="large" color="#007cba" /></View> : 
       ( <View style={styles.container}>
           <View style={styles.logoContainer}>
             <Image source={{uri: 'https://nstv.gr/site/templates/images/nstvlogo.png',}} style={styles.logo}/>
@@ -66,7 +53,12 @@ const HomeScreen = ({navigation}) => {
               <TouchableOpacity onPress={() => navigation.navigate('ArticleScreen', {id: `${item.id}`, body: `${item.body}`, title: `${item.title}`, image: `${item.image}`, views: `${item.views}`, date: `${item.date}`})}>
                 <Image source={{uri: item.image}} style={styles.image} />
                 <Text style={styles.dateviews}>Δημοσιεύτηκε στις: {item.date}| {item.views} προβολές </Text>
-                <Text style={styles.title}>{item.title}</Text>
+                <View style={styles.listTitle}>
+                <RenderHtml
+                  contentWidth={width}
+                  source={{html:`<h3>${item.title}</h3>`}}
+                />
+                </View>
               </TouchableOpacity>
               );
             }}
@@ -87,14 +79,23 @@ const HomeScreen = ({navigation}) => {
 
 const ArticleScreen = ({route, navigation}) => {
   const { id, body, title, image, views, date } = route.params;
+  const { width } = useWindowDimensions();
+  const sourceTitle = {html:`<h3>${title}</h3>`};
+  const sourceBody = {html:`${body}`}
   return(
 
   
-  <ScrollView>
+  <ScrollView style={styles.articleContainer}>
     <Image source={{uri: image}} style={styles.imageArticle} />
     <Text style={styles.dateviews}>Δημοσιεύτηκε στις: {date}| {views} προβολές </Text>
-    <Text style={styles.title}>{title}</Text>
-    <Text style={styles.body}>{body}</Text>
+    <RenderHtml
+      contentWidth={width}
+      source={sourceTitle}
+    />
+    <RenderHtml
+      contentWidth={width}
+      source={sourceBody}
+    />
   </ScrollView>
   )
 }
@@ -136,7 +137,7 @@ const styles = StyleSheet.create({
   logoContainer: {
     width: '100%',
     padding: 10,
-    marginTop: 40  
+    marginTop: 10  
   },
   logo: {
     padding: 40,
@@ -145,10 +146,8 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     justifyContent: 'center'
   },
-  title: {
-    fontSize: 20,
-    paddingLeft: 15,
-    marginBottom: 10
+  listTitle: {
+    paddingLeft: 15
   },
   dateviews: {
     fontSize: 13,
@@ -158,5 +157,13 @@ const styles = StyleSheet.create({
   },
   body: {
     padding: 20
+  },
+  articleContainer: {
+    padding: 10,
+    width: '100%'
+  },
+  activityContainer: {
+    flex: 1,
+    justifyContent: 'center'
   }
 });
