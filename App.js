@@ -40,7 +40,7 @@ const HomeScreen = ({navigation}) => {
   
   return (
     <View style={{ flex: 1 }}>
-      {isLoading ? <View style={styles.activityContainer}><ActivityIndicator size="large" color="#007cba" /></View> : 
+      {isLoading ? <View style={styles.activityContainer}><ActivityIndicator size="large" color="#007cba" /><Text style={styles.isloading}>Κάτι νέο έρχεται...</Text></View> : 
       ( <View style={styles.container}>
           <View style={styles.logoContainer}>
             <Image source={{uri: 'https://nstv.gr/site/templates/images/nstvlogo.png',}} style={styles.logo}/>
@@ -164,6 +164,12 @@ const styles = StyleSheet.create({
   },
   activityContainer: {
     flex: 1,
-    justifyContent: 'center'
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  isloading: {
+    fontSize: 20,
+    fontWeight: '700',
+    marginTop: 10
   }
 });
