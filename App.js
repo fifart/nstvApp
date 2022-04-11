@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { useState, useEffect} from 'react';
-import { FlatList, StyleSheet, Text, View, Image, TouchableOpacity, RefreshControl, ScrollView, useWindowDimensions, ActivityIndicator } from 'react-native';
+import { FlatList, StyleSheet, Text, View, Image, TouchableOpacity, RefreshControl, ScrollView, useWindowDimensions, ActivityIndicator, Button, Share } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -50,7 +50,7 @@ const HomeScreen = ({navigation}) => {
             keyExtractor={({ id }, index) => id}
             renderItem={({item})=>{
               return (
-              <TouchableOpacity onPress={() => navigation.navigate('ArticleScreen', {id: `${item.id}`, body: `${item.body}`, title: `${item.title}`, image: `${item.image}`, views: `${item.views}`, date: `${item.date}`})}>
+              <TouchableOpacity onPress={() => navigation.navigate('ArticleScreen', {id: `${item.id}`, body: `${item.body}`, title: `${item.title}`, image: `${item.image}`, views: `${item.views}`, date: `${item.date}`, url:`${item.url}`})}>
                 <Image source={{uri: item.image}} style={styles.image} />
                 <Text style={styles.dateviews}>Δημοσιεύτηκε στις: {item.date}| {item.views} προβολές </Text>
                 <View style={styles.listTitle}>
@@ -78,16 +78,35 @@ const HomeScreen = ({navigation}) => {
 
 
 const ArticleScreen = ({route, navigation}) => {
-  const { id, body, title, image, views, date } = route.params;
+  const { url, body, title, image, views, date } = route.params;
   const { width } = useWindowDimensions();
   const sourceTitle = {html:`<h3>${title}</h3>`};
   const sourceBody = {html:`${body}`}
-  return(
 
-  
+  const share = async () => {
+    try {
+      const result = await Share.share({
+        message:`Αξίζει να το διαβάσεις: ${url}`,
+        title:"",
+        url:""
+      });
+
+      if (result.action === Share.sharedAction) {
+        alert("Το μοιράστηκες!")
+      } else if (result.action === Share.dismissedAction) {
+        // dismissed
+        alert("Το μετάνιωσες;")
+      }
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
+  return(
   <ScrollView style={styles.articleContainer}>
     <Image source={{uri: image}} style={styles.imageArticle} />
-    <Text style={styles.dateviews}>Δημοσιεύτηκε στις: {date}| {views} προβολές </Text>
+    <Text style={styles.dateviews}>Δημοσιεύτηκε στις: {date} | {views} προβολές </Text>
+    <TouchableOpacity style={styles.Share} onPress={share} ><Text style={styles.shareText}>Μοιράσου τη Γνώση...</Text></TouchableOpacity>
     <RenderHtml
       contentWidth={width}
       source={sourceTitle}
@@ -137,7 +156,7 @@ const styles = StyleSheet.create({
   logoContainer: {
     width: '100%',
     padding: 10,
-    marginTop: 10  
+    marginTop: 20  
   },
   logo: {
     padding: 40,
@@ -171,5 +190,17 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '700',
     marginTop: 10
+  },
+  Share:{
+    marginTop: 5,
+    width: '100%',
+    backgroundColor: '#46a1fd',
+    alignItems: 'center'
+    
+  },
+  shareText:{
+    color: '#fff',
+    padding: 5,
+    fontSize: 16
   }
 });
