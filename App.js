@@ -5,6 +5,9 @@ import * as WebBrowser from 'expo-web-browser';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import RenderHtml from 'react-native-render-html';
+import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function App() {
   
@@ -34,7 +37,7 @@ export default function App() {
     setRefreshing(false);
 };
 const Stack = createNativeStackNavigator();
-
+const Tab = createMaterialBottomTabNavigator();
 const HomeScreen = ({navigation}) => {
   const { width } = useWindowDimensions();
   
@@ -91,9 +94,10 @@ const ArticleScreen = ({route, navigation}) => {
         url:""
       });
 
-      if (result.action === Share.sharedAction) {
-        alert("Το μοιράστηκες!")
-      } else if (result.action === Share.dismissedAction) {
+      // if (result.action === Share.sharedAction) {
+      //   alert("Το μοιράστηκες!")y
+      // } else 
+      if (result.action === Share.dismissedAction) {
         // dismissed
         alert("Το μετάνιωσες;")
       }
@@ -118,9 +122,56 @@ const ArticleScreen = ({route, navigation}) => {
   </ScrollView>
   )
 }
+
+const Profile = () => {
+  return <Text>Hello</Text>
+}
+
+const Settings = () => {
+  const { width } = useWindowDimensions();
+  const sourceRadio = {html:`<html><h2>NSTv Live</h2><iframe allowtransparency="true" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" src="https://p1.dos.pm/nstv" frameborder="0" scrolling=no height="500" width="100%"></iframe></html>`};
+  return (
+  <SafeAreaView>
+    <RenderHtml source={sourceRadio} width={width}  /> 
+  </SafeAreaView>
+  
+  );
+}
+
+
+const Root = () => {
+  return (
+    <Tab.Navigator
+    initialRouteName="Ροή"
+    activeColor="#f0edf6"
+    inactiveColor="#46a1fd"
+    barStyle={{ backgroundColor: '#4175bd' }}
+    >
+      <Tab.Screen name="HomeScreen" component={HomeScreen} options={{
+          tabBarLabel: 'Ροή',
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons name="rss" color={color} size={26} />
+          ),
+          headerShown: false
+        }} />
+      <Tab.Screen name="Settings" component={Settings} options={{
+          tabBarLabel: 'Σχετικά',
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons name="apps" color={color} size={26} />
+          ),
+        }}/>
+    </Tab.Navigator>
+  );
+} 
+
   return (
     <NavigationContainer>
       <Stack.Navigator>
+        <Stack.Screen 
+        name="Root"
+        component={Root}
+        options={{ headerShown: false }}
+        />
         <Stack.Screen 
         name="HomeScreen"
         component={HomeScreen}
