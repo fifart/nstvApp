@@ -8,7 +8,10 @@ import RenderHtml from 'react-native-render-html';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
+import { WebView } from 'react-native-webview';
+import Icon from 'react-native-vector-icons/FontAwesome';
+const myIcon = <Icon name="play" size={30} color="#fff" />;
+const shareIcon = <Icon name="share" size={20} color="#fff" />;
 export default function App() {
   
   const [isLoading, setLoading] = useState(true);
@@ -110,7 +113,7 @@ const ArticleScreen = ({route, navigation}) => {
   <ScrollView style={styles.articleContainer}>
     <Image source={{uri: image}} style={styles.imageArticle} />
     <Text style={styles.dateviews}>Δημοσιεύτηκε στις: {date} | {views} προβολές </Text>
-    <TouchableOpacity style={styles.Share} onPress={share} ><Text style={styles.shareText}>Μοιράσου τη Γνώση...</Text></TouchableOpacity>
+    <TouchableOpacity style={styles.Share} onPress={share} ><Text style={styles.shareText}>{shareIcon} Μοιράσου τη Γνώση...</Text></TouchableOpacity>
     <RenderHtml
       contentWidth={width}
       source={sourceTitle}
@@ -123,17 +126,24 @@ const ArticleScreen = ({route, navigation}) => {
   )
 }
 
-const Profile = () => {
-  return <Text>Hello</Text>
-}
 
-const Settings = () => {
-  const { width } = useWindowDimensions();
-  const sourceRadio = {html:`<html><h2>NSTv Live</h2><iframe allowtransparency="true" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" src="https://p1.dos.pm/nstv" frameborder="0" scrolling=no height="500" width="100%"></iframe></html>`};
+
+const Live = () => {
+
+  const openVideo = () => {WebBrowser.openBrowserAsync("https://nstv.gr/liveonapp/")};
+
   return (
-  <SafeAreaView>
-    <RenderHtml source={sourceRadio} width={width}  /> 
+  <SafeAreaView style={{flex:1,flexDirection:'column',alignItems:'center'}}>
+    <View style={styles.logoContainer}>
+            <Image source={{uri: 'https://nstv.gr/site/templates/images/nstvlogo.png',}} style={styles.logo}/>
+    </View>
+    <TouchableOpacity style={styles.live} onPress={openVideo}>
+    <Text style={{width:'100%',fontSize: 20, backgroundColor:'#46a1fd', color:'#fff', padding: 20, marginBottom:10, textAlign: 'center', fontWeight:700}}>Click  {myIcon}  Watch</Text>
+    <Image source={{uri: "https://nstv.gr/site/assets/files/2615/nstvlive.300x250.jpg"}} style={styles.liveImage} />
+    </TouchableOpacity>
+    
   </SafeAreaView>
+    
   
   );
 }
@@ -154,10 +164,10 @@ const Root = () => {
           ),
           headerShown: false
         }} />
-      <Tab.Screen name="Settings" component={Settings} options={{
-          tabBarLabel: 'Σχετικά',
+      <Tab.Screen name="Live" component={Live} options={{
+          tabBarLabel: 'NStv Live',
           tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="apps" color={color} size={26} />
+            <MaterialCommunityIcons name="video" color={color} size={26} />
           ),
         }}/>
     </Tab.Navigator>
@@ -253,5 +263,14 @@ const styles = StyleSheet.create({
     color: '#fff',
     padding: 5,
     fontSize: 16
+  },
+  live: {
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  liveImage: {
+    width: '100%',
+    height: 240
   }
 });
