@@ -10,7 +10,6 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { WebView } from 'react-native-webview';
 import Icon from 'react-native-vector-icons/FontAwesome';
-const myIcon = <Icon name="play" size={30} color="#fff" />;
 const shareIcon = <Icon name="share" size={20} color="#fff" />;
 export default function App() {
   
@@ -29,7 +28,6 @@ export default function App() {
 
   useEffect(() => {
     getData();
-    setRefreshing(false);
   },[]);
 
 
@@ -45,7 +43,7 @@ const HomeScreen = ({navigation}) => {
   const { width } = useWindowDimensions();
   
   return (
-    <View style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1 }}>
       {isLoading ? <View style={styles.activityContainer}><ActivityIndicator size="large" color="#007cba" /><Text style={styles.isloading}>Κάτι νέο έρχεται...</Text></View> : 
       ( <View style={styles.container}>
           <View style={styles.logoContainer}>
@@ -78,7 +76,7 @@ const HomeScreen = ({navigation}) => {
               />
         </View>
       )}
-    </View>
+    </SafeAreaView>
   );
 }  
 
@@ -131,6 +129,7 @@ const ArticleScreen = ({route, navigation}) => {
 const Live = () => {
 
   const openVideo = () => {WebBrowser.openBrowserAsync("https://nstv.gr/liveonapp/")};
+  const myIcon = <Icon name="play" size={30} color="#fff" />;
 
   return (
   <SafeAreaView style={{flex:1,flexDirection:'column',alignItems:'center'}}>
@@ -138,7 +137,7 @@ const Live = () => {
             <Image source={{uri: 'https://nstv.gr/site/templates/images/nstvlogo.png',}} style={styles.logo}/>
     </View>
     <TouchableOpacity style={styles.live} onPress={openVideo}>
-    <Text style={{width:'100%',fontSize: 20, backgroundColor:'#46a1fd', color:'#fff', padding: 20, marginBottom:10, textAlign: 'center', fontWeight:700}}>Click  {myIcon}  Watch</Text>
+    <Text style={styles.liveButtonText}>Click   {myIcon}   Watch</Text>
     <Image source={{uri: "https://nstv.gr/site/assets/files/2615/nstvlive.300x250.jpg"}} style={styles.liveImage} />
     </TouchableOpacity>
     
@@ -266,11 +265,20 @@ const styles = StyleSheet.create({
   },
   live: {
     width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center'
   },
   liveImage: {
     width: '100%',
     height: 240
+  },
+  liveButtonText: {
+    width:'100%',
+    fontSize: 20, 
+    backgroundColor:'#46a1fd', 
+    color:'#fff', 
+    padding: 20, 
+    marginBottom:10, 
+    textAlign: 'center', 
+    fontWeight: '700'
   }
+  
 });
