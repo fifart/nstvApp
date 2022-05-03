@@ -11,6 +11,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { WebView } from 'react-native-webview';
 import Icon from 'react-native-vector-icons/FontAwesome';
 const shareIcon = <Icon name="share" size={20} color="#fff" />;
+
+import Culture from './Screens/Culture';
+import Sports from './Screens/Sports';
+import Social from './Screens/Social';
+
 export default function App() {
   
   const [isLoading, setLoading] = useState(true);
@@ -54,14 +59,19 @@ const HomeScreen = ({navigation}) => {
             keyExtractor={({ id }, index) => id}
             renderItem={({item})=>{
               return (
-              <TouchableOpacity onPress={() => navigation.navigate('ArticleScreen', {id: `${item.id}`, body: `${item.body}`, title: `${item.title}`, image: `${item.image}`, views: `${item.views}`, date: `${item.date}`, url:`${item.url}`})}>
-                <Image source={{uri: item.image}} style={styles.image} />
-                <Text style={styles.dateviews}>Δημοσιεύτηκε στις: {item.date}| {item.views} προβολές </Text>
+              <TouchableOpacity style={styles.feedArticleContainer} onPress={() => navigation.navigate('ArticleScreen', {id: `${item.id}`, body: `${item.body}`, title: `${item.title}`, image: `${item.image}`, views: `${item.views}`, date: `${item.date}`, url:`${item.url}`})}>
+                <View style={styles.feedImage}>
+                <Image fadeDuration={1000} loadingIndicatorSource={{uri:'https://nstv.gr/site/templates/images/nstvlogo.png'}} source={{uri: item.image}} style={styles.image} />
+                </View>
+                <View style={styles.feedBody}>
+                <Text style={styles.dateviews}>Στις: {item.date} </Text>
+                <Text style={styles.dateviews}> {item.views} προβολές | {item.category} </Text>
                 <View style={styles.listTitle}>
                 <RenderHtml
                   contentWidth={width}
                   source={{html:`<h3>${item.title}</h3>`}}
                 />
+                </View>
                 </View>
               </TouchableOpacity>
               );
@@ -110,7 +120,7 @@ const ArticleScreen = ({route, navigation}) => {
   return(
   <ScrollView style={styles.articleContainer}>
     <Image source={{uri: image}} style={styles.imageArticle} />
-    <Text style={styles.dateviews}>Δημοσιεύτηκε στις: {date} | {views} προβολές </Text>
+    <Text style={styles.dateviews}>Δημοσιεύτηκε στις: {date} | {views} προβολές</Text>
     <TouchableOpacity style={styles.Share} onPress={share} ><Text style={styles.shareText}>{shareIcon} Μοιράσου τη Γνώση...</Text></TouchableOpacity>
     <RenderHtml
       contentWidth={width}
@@ -163,6 +173,24 @@ const Root = () => {
           ),
           headerShown: false
         }} />
+       <Tab.Screen name="Social" component={Social} options={{
+          tabBarLabel: 'Κοινωνία',
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons name="account-multiple" color={color} size={26} />
+          ),
+        }}/>
+      <Tab.Screen name="Culture" component={Culture} options={{
+          tabBarLabel: 'Πολιτισμός',
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons name="music-clef-treble" color={color} size={26} />
+          ),
+        }}/>
+      <Tab.Screen name="Sports" component={Sports} options={{
+          tabBarLabel: 'Αθλητικά',
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons name="basketball" color={color} size={26} />
+          ),
+        }}/>
       <Tab.Screen name="Live" component={Live} options={{
           tabBarLabel: 'NStv Live',
           tabBarIcon: ({ color }) => (
@@ -202,16 +230,31 @@ const styles = StyleSheet.create({
      flexDirection: 'column', 
      justifyContent:  'space-between'
   },
+  feedArticleContainer:{
+    backgroundColor: '#fff',
+    flex: 1,
+    flexDirection: 'row',
+    marginVertical: 10
+    
+  },
   image: {
+    resizeMode: 'cover',
     width: '100%',
-    height: 240,
-    resizeMode: 'cover'
+    height: '100%',
+  },
+  feedImage: {
+    flex: 1
+  },
+  feedBody: {
+    flex: 2
   },
   imageArticle: {
     width: '100%',
     height: 240,
     resizeMode: 'cover',
-    marginBottom: 10
+    marginBottom: 10,
+    borderBottomLeftRadius: 40,
+    borderBottomRightRadius: 40
   },
   logoContainer: {
     width: '100%',
@@ -239,7 +282,8 @@ const styles = StyleSheet.create({
   },
   articleContainer: {
     padding: 10,
-    width: '100%'
+    width: '100%',
+    backgroundColor: '#fff'
   },
   activityContainer: {
     flex: 1,
