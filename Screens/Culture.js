@@ -1,47 +1,54 @@
 import { useState, useEffect} from 'react';
 import { FlatList, StyleSheet, Text, View, Image, TouchableOpacity, RefreshControl, useWindowDimensions, ActivityIndicator } from 'react-native';
+import NetInfo from '@react-native-community/netinfo';
 import RenderHtml from 'react-native-render-html';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Icon from 'react-native-vector-icons/FontAwesome';
-const shareIcon = <Icon name="share" size={20} color="#fff" />;
+import Outofnetwork from '../Components/Outofnetwork';
 
 export default function Culture({navigation}) {
   
-    const [isCulLoading, setCulLoading] = useState(true);
-    const [culData, setCulData] = useState([]);
-    const [culRefreshing, setCulRefreshing] = useState(false);
-    
+    const [isLoading, setLoading] = useState(true);
+    const [data, setData] = useState([]);
+    const [refreshing, setRefreshing] = useState(false);
+    const [isConnected, setConnection] = useState(true);
   
-    const getCulData = async () =>{
+    const getData = async () =>{
       fetch('https://nstv.gr/culture-data/')
       .then((res)=>res.json())
-      .then((json)=>setCulData(json))
+      .then((json)=>setData(json))
       .catch((error) => console.error(error))
-      .finally(() => setCulLoading(false));
+      .finally(() => setLoading(false));
     } 
+
+    NetInfo.fetch().then(state => {
+      state.isConnected ? setConnection(true) : setConnection(false);
+   });
   
     useEffect(() => {
-      getCulData();
+      getData();
     },[]);
   
+    
   
-    const onCulRefresh = () => {
-      setCulLoading(false);
-      setCulRefreshing(true);
-      getCulData();
-      setCulRefreshing(false);
+    const onRefresh = () => {
+      setLoading(false);
+      setRefreshing(true);
+      getData();
+      setRefreshing(false);
   };
     const { width } = useWindowDimensions();
     
     return (
       <SafeAreaView style={{ flex: 1 }}>
-        {isCulLoading ? <View style={styles.activityContainer}><ActivityIndicator size="large" color="#007cba" /><Text style={styles.isloading}>Κάτι νέο έρχεται...</Text></View> : 
+        
+        {isLoading ? <View style={styles.activityContainer}><ActivityIndicator size="large" color="#007cba" /><Text style={styles.isloading}>Κάτι νέο έρχεται...</Text></View> : 
         ( <View style={styles.container}>
             <View style={styles.logoContainer}>
               <Image source={{uri: 'https://nstv.gr/site/templates/images/nstvlogo.png',}} style={styles.logo}/>
             </View>
+            {isConnected ? 
             <FlatList
-              data={culData}
+              data={data}
               keyExtractor={({ id }, index) => id}
               renderItem={({item})=>{
                 return (
@@ -64,12 +71,13 @@ export default function Culture({navigation}) {
               }}
               refreshControl={
                 <RefreshControl
-                  refreshing={culRefreshing}
-                  onRefresh={onCulRefresh}
+                  refreshing={refreshing}
+                  onRefresh={onRefresh}
                   tintColor="#dd0020"
                 />
               }
                 />
+                : <Outofnetwork/> }
           </View>
         )}
       </SafeAreaView>

@@ -1,47 +1,57 @@
 import { useState, useEffect} from 'react';
 import { FlatList, StyleSheet, Text, View, Image, TouchableOpacity, RefreshControl, useWindowDimensions, ActivityIndicator } from 'react-native';
+import NetInfo from '@react-native-community/netinfo';
 import RenderHtml from 'react-native-render-html';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Icon from 'react-native-vector-icons/FontAwesome';
-const shareIcon = <Icon name="share" size={20} color="#fff" />;
+import Outofnetwork from '../Components/Outofnetwork';
 
 export default function Sports({navigation}) {
   
-    const [isSportLoading, setSportLoading] = useState(true);
-    const [sportData, setSportData] = useState([]);
-    const [sportRefreshing, setSportRefreshing] = useState(false);
-    
-  
-    const getSportData = async () =>{
+    const [isLoading, setLoading] = useState(true);
+    const [data, setData] = useState([]);
+    const [refreshing, setRefreshing] = useState(false);
+    const [isConnected, setConnection] = useState(true);
+
+
+    const getData = async () =>{
       fetch('https://nstv.gr/sport-data/')
       .then((res)=>res.json())
-      .then((json)=>setSportData(json))
+      .then((json)=>setData(json))
       .catch((error) => console.error(error))
-      .finally(() => setSportLoading(false));
+      .finally(() => setLoading(false));
     } 
+
+    NetInfo.fetch().then(state => {
+        state.isConnected ? setConnection(true) : setConnection(false);
+     });
   
     useEffect(() => {
-      getSportData();
+      getData();
     },[]);
   
+    
   
-    const onSportRefresh = () => {
-      setSportLoading(false);
-      setSportRefreshing(true);
-      getSportData();
-      setSportRefreshing(false);
+    const onRefresh = () => {
+      setLoading(false);
+      setRefreshing(true);
+      getData();
+      setRefreshing(false);
   };
     const { width } = useWindowDimensions();
     
-    return (
+   
+    
+      return (
       <SafeAreaView style={{ flex: 1 }}>
-        {isSportLoading ? <View style={styles.activityContainer}><ActivityIndicator size="large" color="#007cba" /><Text style={styles.isloading}>Κάτι νέο έρχεται...</Text></View> : 
+        
+        {isLoading ? <View style={styles.activityContainer}><ActivityIndicator size="large" color="#007cba" /><Text style={styles.isloading}>Κάτι νέο έρχεται...</Text></View> : 
         ( <View style={styles.container}>
             <View style={styles.logoContainer}>
               <Image source={{uri: 'https://nstv.gr/site/templates/images/nstvlogo.png',}} style={styles.logo}/>
             </View>
+            {isConnected ? 
             <FlatList
-              data={sportData}
+              data={data}
               keyExtractor={({ id }, index) => id}
               renderItem={({item})=>{
                 return (
@@ -64,12 +74,13 @@ export default function Sports({navigation}) {
               }}
               refreshControl={
                 <RefreshControl
-                  refreshing={sportRefreshing}
-                  onRefresh={onSportRefresh}
+                  refreshing={refreshing}
+                  onRefresh={onRefresh}
                   tintColor="#dd0020"
                 />
               }
                 />
+                : <Outofnetwork/> }
           </View>
         )}
       </SafeAreaView>

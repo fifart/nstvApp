@@ -5,7 +5,7 @@ import RenderHtml from 'react-native-render-html';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Outofnetwork from '../Components/Outofnetwork';
 
-export default function Social({navigation}) {
+export default function Dimotika({navigation}) {
   
     const [isLoading, setLoading] = useState(true);
     const [data, setData] = useState([]);
@@ -14,7 +14,7 @@ export default function Social({navigation}) {
 
   
     const getData = async () =>{
-      fetch('https://nstv.gr/social-data/')
+      fetch('https://nstv.gr/dimotika-data/')
       .then((res)=>res.json())
       .then((json)=>setData(json))
       .catch((error) => console.error(error))

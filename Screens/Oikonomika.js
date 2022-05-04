@@ -5,16 +5,15 @@ import RenderHtml from 'react-native-render-html';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Outofnetwork from '../Components/Outofnetwork';
 
-export default function Social({navigation}) {
+export default function Oikonomika({navigation}) {
   
     const [isLoading, setLoading] = useState(true);
     const [data, setData] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
     const [isConnected, setConnection] = useState(true);
-
   
     const getData = async () =>{
-      fetch('https://nstv.gr/social-data/')
+      fetch('https://nstv.gr/oikonomia-data/')
       .then((res)=>res.json())
       .then((json)=>setData(json))
       .catch((error) => console.error(error))

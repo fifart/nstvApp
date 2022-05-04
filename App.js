@@ -1,6 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { useState, useEffect} from 'react';
 import { FlatList, StyleSheet, Text, View, Image, TouchableOpacity, RefreshControl, ScrollView, useWindowDimensions, ActivityIndicator, Button, Share } from 'react-native';
+import NetInfo from '@react-native-community/netinfo';
 import * as WebBrowser from 'expo-web-browser';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -15,13 +16,16 @@ const shareIcon = <Icon name="share" size={20} color="#fff" />;
 import Culture from './Screens/Culture';
 import Sports from './Screens/Sports';
 import Social from './Screens/Social';
+import Dimotika from './Screens/Dimotika';
+import Oikonomika from './Screens/Oikonomika';
+import Outofnetwork from './Components/Outofnetwork';
 
 export default function App() {
   
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
-  
+  const [isConnected, setConnection] = useState(true);
 
   const getData = async () =>{
     fetch('https://nstv.gr/data/')
@@ -30,6 +34,10 @@ export default function App() {
     .catch((error) => console.error(error))
     .finally(() => setLoading(false));
   } 
+
+  NetInfo.fetch().then(state => {
+    state.isConnected ? setConnection(true) : setConnection(false);
+ });
 
   useEffect(() => {
     getData();
@@ -44,6 +52,7 @@ export default function App() {
 };
 const Stack = createNativeStackNavigator();
 const Tab = createMaterialBottomTabNavigator();
+
 const HomeScreen = ({navigation}) => {
   const { width } = useWindowDimensions();
   
@@ -54,6 +63,7 @@ const HomeScreen = ({navigation}) => {
           <View style={styles.logoContainer}>
             <Image source={{uri: 'https://nstv.gr/site/templates/images/nstvlogo.png',}} style={styles.logo}/>
           </View>
+           {isConnected ?
           <FlatList
             data={data}
             keyExtractor={({ id }, index) => id}
@@ -83,7 +93,7 @@ const HomeScreen = ({navigation}) => {
                 tintColor="#dd0020"
               />
             }
-              />
+              /> : <Outofnetwork/>}
         </View>
       )}
     </SafeAreaView>
@@ -169,7 +179,7 @@ const Root = () => {
       <Tab.Screen name="HomeScreen" component={HomeScreen} options={{
           tabBarLabel: 'Ροή',
           tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="rss" color={color} size={26} />
+            <MaterialCommunityIcons name="newspaper" color={color} size={26} />
           ),
           headerShown: false
         }} />
@@ -189,6 +199,18 @@ const Root = () => {
           tabBarLabel: 'Αθλητικά',
           tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons name="basketball" color={color} size={26} />
+          ),
+        }}/>
+       <Tab.Screen name="Dimotika" component={Dimotika} options={{
+          tabBarLabel: 'Δημοτικά',
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons name="nature-people" color={color} size={26} />
+          ),
+        }}/>
+        <Tab.Screen name="Oikonomika" component={Oikonomika} options={{
+          tabBarLabel: 'Oικονομικά',
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons name="cash-100" color={color} size={26} />
           ),
         }}/>
       <Tab.Screen name="Live" component={Live} options={{
