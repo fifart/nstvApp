@@ -20,12 +20,13 @@ export default function Oikonomika({navigation}) {
       .finally(() => setLoading(false));
     } 
 
-    NetInfo.fetch().then(state => {
-        state.isConnected ? setConnection(true) : setConnection(false);
-     });
+    
   
     useEffect(() => {
       getData();
+      NetInfo.fetch().then(state => {
+        state.isConnected ? setConnection(true) : setConnection(false);
+     });
     },[]);
   
     

@@ -20,13 +20,12 @@ export default function Sports({navigation}) {
       .catch((error) => console.error(error))
       .finally(() => setLoading(false));
     } 
-
-    NetInfo.fetch().then(state => {
-        state.isConnected ? setConnection(true) : setConnection(false);
-     });
   
     useEffect(() => {
       getData();
+      NetInfo.fetch().then(state => {
+        state.isConnected ? setConnection(true) : setConnection(false);
+     });
     },[]);
   
     
