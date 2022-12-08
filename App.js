@@ -59,17 +59,28 @@ const HomeScreen = ({navigation}) => {
   
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      {isLoading ? <View style={styles.activityContainer}><ActivityIndicator size="large" color="#007cba" /><Text style={styles.isloading}>Κάτι νέο έρχεται...</Text></View> : 
+      <ScrollView
+        style={{flex:1}}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor="#dd0020"
+          />
+        }
+      >
+        {isLoading ? <View style={styles.activityContainer}><ActivityIndicator size="large" color="#007cba" /><Text style={styles.isloading}>Κάτι νέο έρχεται...</Text></View> : 
       ( <View style={styles.container}>
           <View style={styles.logoContainer}>
             <Image source={{uri: 'https://nstv.gr/site/templates/images/nstvlogo.png',}} style={styles.logo}/>
           </View>
-           {isConnected ?
+           {isConnected ? 
           <FlatList
             data={data}
             keyExtractor={({ id }, index) => id}
             renderItem={({item})=>{
               return (
+              
               <TouchableOpacity style={styles.feedArticleContainer} onPress={() => navigation.navigate('ArticleScreen', {id: `${item.id}`, body: `${item.body}`, title: `${item.title}`, image: `${item.image}`, views: `${item.views}`, date: `${item.date}`, url:`${item.url}`})}>
                 <View style={styles.feedImage}>
                 <Image fadeDuration={1000} loadingIndicatorSource={{uri:'https://nstv.gr/site/templates/images/nstvlogo.png'}} source={{uri: item.image}} style={styles.image} />
@@ -84,8 +95,8 @@ const HomeScreen = ({navigation}) => {
                 />
                 </View>
                 </View>
-              </TouchableOpacity>
-              );
+              </TouchableOpacity> 
+              ); 
             }}
             refreshControl={
               <RefreshControl
@@ -93,13 +104,16 @@ const HomeScreen = ({navigation}) => {
                 onRefresh={onRefresh}
                 tintColor="#dd0020"
               />
-            }
-              /> : <Outofnetwork/>}
+            }/> : <Outofnetwork/>}
+             
         </View>
       )}
+      </ScrollView>
     </SafeAreaView>
   );
 }  
+     
+      
 
 
 const ArticleScreen = ({route, navigation}) => {
@@ -129,7 +143,8 @@ const ArticleScreen = ({route, navigation}) => {
   };
 
   return(
-  <ScrollView style={styles.articleContainer}>
+  <ScrollView style={styles.articleContainer}
+  >
     <Image source={{uri: image}} style={styles.imageArticle} />
     <Text style={styles.dateviews}>Δημοσιεύτηκε στις: {date} | {views} προβολές</Text>
     <TouchableOpacity style={styles.Share} onPress={share} ><Text style={styles.shareText}>{shareIcon} Μοιράσου τη Γνώση...</Text></TouchableOpacity>

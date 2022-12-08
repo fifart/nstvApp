@@ -1,5 +1,5 @@
 import { useState, useEffect} from 'react';
-import { FlatList, StyleSheet, Text, View, Image, TouchableOpacity, RefreshControl, useWindowDimensions, ActivityIndicator } from 'react-native';
+import { FlatList, StyleSheet, Text, View, Image, TouchableOpacity, RefreshControl, useWindowDimensions, ActivityIndicator, Button } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import RenderHtml from 'react-native-render-html';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -41,7 +41,6 @@ export default function Oikonomika({navigation}) {
     
     return (
       <SafeAreaView style={{ flex: 1 }}>
-        
         {isLoading ? <View style={styles.activityContainer}><ActivityIndicator size="large" color="#007cba" /><Text style={styles.isloading}>Κάτι νέο έρχεται...</Text></View> : 
         ( <View style={styles.container}>
             <View style={styles.logoContainer}>
@@ -78,7 +77,7 @@ export default function Oikonomika({navigation}) {
                 />
               }
                 />
-                : <Outofnetwork/> }
+                : <Outofnetwork /> }
           </View>
         )}
       </SafeAreaView>
