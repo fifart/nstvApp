@@ -59,16 +59,7 @@ const HomeScreen = ({navigation}) => {
   
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView
-        style={{flex:1}}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            tintColor="#dd0020"
-          />
-        }
-      >
+      
         {isLoading ? <View style={styles.activityContainer}><ActivityIndicator size="large" color="#007cba" /><Text style={styles.isloading}>Κάτι νέο έρχεται...</Text></View> : 
       ( <View style={styles.container}>
           <View style={styles.logoContainer}>
@@ -108,7 +99,7 @@ const HomeScreen = ({navigation}) => {
              
         </View>
       )}
-      </ScrollView>
+      
     </SafeAreaView>
   );
 }  
